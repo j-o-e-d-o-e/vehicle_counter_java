@@ -25,3 +25,5 @@ hs_err_pid*
 .metadata/
 .recommenders/
 videos/
+morning.csv
+settings_object_detection.txt

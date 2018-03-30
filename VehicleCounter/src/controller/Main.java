@@ -10,7 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class VehicleCounter extends Application {
+public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
@@ -35,7 +35,7 @@ public class VehicleCounter extends Application {
 
     public static void main(String[] args) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        Application.launch(VehicleCounter.class, args);
+        Application.launch(Main.class, args);
     }
 
 }

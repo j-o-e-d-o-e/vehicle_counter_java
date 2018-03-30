@@ -26,11 +26,11 @@ public class Main extends Application {
         stage.setResizable(false);
         stage.show();
         Controller controller = loader.getController();
-        stage.setOnCloseRequest((new EventHandler<WindowEvent>() {
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent event) {
                 controller.dispose();
             }
-        }));
+        });
     }
 
     public static void main(String[] args) {

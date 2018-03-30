@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.*?>
+<?import javafx.embed.swing.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="root" prefHeight="750.0" prefWidth="1302.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
+    <center>
+      <VBox prefHeight="569.0" prefWidth="1074.0">
+         <children>
+              <VBox alignment="CENTER_LEFT" prefHeight="597.0" prefWidth="0.0" spacing="5">
+                 <children>
+                      <HBox alignment="CENTER" prefHeight="523.0" prefWidth="934.0" spacing="5.0">
+                          <children>
+                              <VBox alignment="CENTER" prefHeight="506.0" prefWidth="701.0" spacing="5">
+                                  <children>
+                                      <Label fx:id="originalImageLabel" contentDisplay="RIGHT" text="1 - Original frame" underline="true" visible="false">
+                                      <graphic>
+                                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                               <Image url="@../../ressources/info.png" />
+                                            </image>
+                                         </ImageView>
+                                      </graphic>
+                                      <tooltip>
+                                         <Tooltip text="Contours (green outlines with red dots), centroids (blue dots), vehicle lines from first to last centroid (red)" />
+                                      </tooltip>
+                                      </Label>
+                                      <ImageView fx:id="originalImage" fitHeight="500.0" fitWidth="735.0" />
+                                  </children>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                              </VBox>
+                              <VBox alignment="CENTER" prefHeight="490.0" prefWidth="216.0" spacing="5">
+                                  <children>
+                                      <VBox alignment="CENTER" spacing="5">
+                                          <children>
+                                              <Label fx:id="differenceImageLabel" contentDisplay="RIGHT" text="2 - Difference frame" underline="true" visible="false">
+                                           <graphic>
+                                              <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                 <image>
+                                                    <Image url="@../../ressources/info.png" />
+                                                 </image>
+                                              </ImageView>
+                                           </graphic>
+                                           <tooltip>
+                                              <Tooltip text="The difference between average and original frame" />
+                                           </tooltip>
+                                            </Label>
+                                              <ImageView fx:id="differenceImage" fitHeight="237.0" fitWidth="350.0" />
+                                          </children>
+                                 <padding>
+                                    <Insets top="10.0" />
+                                 </padding>
+                                      </VBox>
+                                      <VBox alignment="CENTER" spacing="5">
+                                          <children>
+                                              <Label fx:id="thresholdImageLabel" contentDisplay="RIGHT" text="3 - Threshold frame" underline="true" visible="false">
+                                           <graphic>
+                                              <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                                                 <image>
+                                                    <Image url="@../../ressources/info.png" />
+                                                 </image>
+                                              </ImageView>
+                                           </graphic>
+                                           <tooltip>
+                                              <Tooltip text="The moving objects in the foreground" />
+                                           </tooltip>
+                                            </Label>
+                                              <ImageView fx:id="processedImage" fitHeight="237.0" fitWidth="350.0" />
+                                          </children>
+                                      </VBox>
+                                  </children>
+                              </VBox>
+                          </children>
+                      </HBox>
+                    <Label fx:id="countLabel" contentDisplay="CENTER" lineSpacing="5.0" prefHeight="27.0" prefWidth="595.0">
+                    <font>
+                       <Font size="18.0" />
+                    </font>
+                     <VBox.margin>
+                        <Insets left="55.0" />
+                     </VBox.margin>
+      	          </Label>
+      	              <Label fx:id="speedLabel" contentDisplay="CENTER" lineSpacing="5.0" prefHeight="27.0" prefWidth="600.0">
+      	             <font>
+      	                <Font size="18.0" />
+      	             </font>
+                     <VBox.margin>
+                        <Insets left="55.0" />
+                     </VBox.margin>
+      	          </Label>
+                 </children>
+               <BorderPane.margin>
+                  <Insets left="10.0" top="10.0" />
+               </BorderPane.margin>
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
+              </VBox>
+         </children>
+      </VBox>
+    </center>
+    <right>
+        <VBox alignment="CENTER" prefHeight="607.0" prefWidth="201.0" spacing="10" BorderPane.alignment="BOTTOM_RIGHT">
+            <padding>
+                <Insets left="10" right="10" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Average weight">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="How much the original frame impacts the average and consequently the difference frame (2)" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="avgWeight" blockIncrement="0.01" max="0.5" min="0.01" value="0.01" />
+
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Threshold">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Pixels above this threshold are drawn in white on the threshold frame (3)" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="threshold" blockIncrement="1" max="100" min="0" value="40" />
+
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Contour size">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="The minimum size of white contours (3) to be further considered" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="contourSize" blockIncrement="50" max="3000" min="100" value="1000" />
+
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Contour x distance">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="The maximum x-distance between two white contours (3) to get merged" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="contourXDist" blockIncrement="10" max="300" min="10" value="150" />
+                
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Contour y distance">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="The maximum y-distance between two white contours (3) to get merged" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="contourYDist" blockIncrement="2" max="300" min="2" value="10" />
+                
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Lockon distance">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="The maximum distance between a vehicle and a blue centroid to connect (1)" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="lockonDist" blockIncrement="5" max="300" min="20" value="100" />
+                
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Vehicle timeout">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="How long (secs) a vehicle is allowed to sit around without having any new centroid" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="vehicleTimeout" blockIncrement="0.1" max="1.8" min="0.1" value="0.6" />
+                
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Center x">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Coordinate of the red center line for vehicle detection (1)" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="centerX" blockIncrement="10" max="500" min="150" value="350" />
+                
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Speed barrier right">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Yellow barrier on the right for speed approximation (1)" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="rightBarrier" blockIncrement="10" max="300" min="50" value="200" />
+                
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Speed barrier left">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Yellow barrier on the left for speed approximation (1)" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="leftBarrier" blockIncrement="10" max="600" min="300" value="500" />
+                
+                            <HBox alignment="CENTER" spacing="10.0">
+                   <children>
+                    <Label contentDisplay="RIGHT" text="Speed distance">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../ressources/info.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Distance in meters between the two barriers for speed approximation (1)" />
+                     </tooltip>
+                  </Label>
+                   </children>
+                </HBox>
+                <Slider fx:id="speedDistance" blockIncrement="1" max="24" min="2" value="12" />
+            
+                        </children>
+            <children>
+                <Button fx:id="defaultButton" alignment="center" onAction="#setSlidersToDefaultValues" text="Default values" />
+            </children>
+         <opaqueInsets>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </opaqueInsets>
+         <BorderPane.margin>
+            <Insets right="10.0" top="10.0" />
+         </BorderPane.margin>
+        </VBox>
+    </right>
+    <bottom>
+        <VBox alignment="CENTER" prefHeight="66.0" prefWidth="1307.0" spacing="15">
+            <padding>
+                <Insets bottom="25" left="25" right="25" top="25" />
+            </padding>
+            <children>
+            <HBox alignment="CENTER" spacing="10.0">
+               <children>
+                      <Button fx:id="cameraButton" alignment="center" onAction="#startCamera" text="Start camera" />
+                      <Button fx:id="resetButton" alignment="center" onAction="#resetCounter" text="Reset counter" />
+                      <CheckBox fx:id="speedCheckBox" mnemonicParsing="false" text="Speed tracking" />
+                  <CheckBox fx:id="saveCheckBox" layoutX="439.0" layoutY="14.0" mnemonicParsing="false" text="Save data" />
+               </children>
+            </HBox>
+                <Separator />
+                <Label fx:id="valuesLabel" />
+            </children>
+        </VBox>
+    </bottom>
+   <top>
+      <MenuBar prefHeight="0.0" prefWidth="1115.0" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+               <items>
+                  <MenuItem fx:id="closeMenu" mnemonicParsing="false" onAction="#dispose" text="Exit" />
+               </items></Menu>
+          <Menu mnemonicParsing="false" text="Settings">
+            <items>
+                  <Menu mnemonicParsing="false" text="Camera device">
+                    <items>
+                        <RadioMenuItem id="0" mnemonicParsing="false" selected="true" text="First camera detected by OS">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="toggleDevice" />
+                           </toggleGroup></RadioMenuItem>
+                        <RadioMenuItem id="1" mnemonicParsing="false" text="Second camera if available (ext)" toggleGroup="$toggleDevice" />
+                    </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Draw...">
+                     <items>
+                        <RadioMenuItem fx:id="drawContours" mnemonicParsing="false" selected="true" text="Contours" />
+                        <RadioMenuItem fx:id="drawVehicles" mnemonicParsing="false" selected="true" text="Centroids and vehicle lines" />
+                        <RadioMenuItem fx:id="drawVehicleLabels" mnemonicParsing="false" selected="true" text="Vehicle labels" />
+                     </items>
+                  </Menu>
+                  <MenuItem fx:id="loadValues" mnemonicParsing="false" onAction="#loadUserValues" text="Load values from..." />
+                  <MenuItem fx:id="saveValues" mnemonicParsing="false" onAction="#saveUserValues" text="Save values to..." />
+                  <MenuItem fx:id="saveData" mnemonicParsing="false" onAction="#setSaveDataPath" text="Save data to..." />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Info">
+            <items>
+              <MenuItem mnemonicParsing="false" text="© 2018 joedoe (github.com/j-o-e-d-o-e)" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+</BorderPane>

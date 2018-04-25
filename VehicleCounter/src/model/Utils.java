@@ -20,10 +20,8 @@ public final class Utils {
         }
     }
 
-    public static <T> void onFXThread(final ObjectProperty<T> property, final T value) {
-        Platform.runLater(() -> {
-            property.set(value);
-        });
+    public static <T> void onFxThread(final ObjectProperty<T> property, final T value) {
+        Platform.runLater(() -> property.set(value));
     }
 
     private static BufferedImage matToBufferedImage(Mat original) {
@@ -41,7 +39,6 @@ public final class Utils {
         }
         final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(sourcePixels, 0, targetPixels, 0, sourcePixels.length);
-
         return image;
     }
 }

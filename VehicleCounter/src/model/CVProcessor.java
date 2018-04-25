@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -14,7 +15,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-public final class CVProcessor {
+public final class CvProcessor {
     private long frameTime;
     private Mat avgFrame;
     private List<Point> lastCentroids = new ArrayList<>();
@@ -32,8 +33,8 @@ public final class CVProcessor {
 
         Mat grayBlurredFrame = new Mat();
         Imgproc.GaussianBlur(grayFrame, grayBlurredFrame, new Size(21, 21), 0);
-
         grayBlurredFrame.convertTo(grayBlurredFrame, CvType.CV_32F);
+
         if (avgFrame == null) {
             avgFrame = grayBlurredFrame.clone();
         }
@@ -48,40 +49,24 @@ public final class CVProcessor {
     public Mat getThresholdFrame(Mat differenceFrame, double threshold) {
         Mat thresholdFrame = new Mat();
         Imgproc.threshold(differenceFrame, thresholdFrame, threshold, 255, Imgproc.THRESH_BINARY);
-
-        Mat dilate = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
-        Mat erode = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
-        Imgproc.erode(thresholdFrame, thresholdFrame, erode);
-        Imgproc.erode(thresholdFrame, thresholdFrame, erode);
-        Imgproc.dilate(thresholdFrame, thresholdFrame, dilate);
-        Imgproc.dilate(thresholdFrame, thresholdFrame, dilate);
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(5, 5));
+        Imgproc.erode(thresholdFrame, thresholdFrame, kernel, new Point(-1, -1), 2);
+        Imgproc.dilate(thresholdFrame, thresholdFrame, kernel, new Point(-1, -1), 2);
         return thresholdFrame;
     }
 
     public List<MatOfPoint> getContours(Mat thresholdFrame, double contourSize, double xDist, double yDist) {
         List<MatOfPoint> contours = new ArrayList<>();
         Imgproc.findContours(thresholdFrame, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-        List<MatOfPoint> contoursToRemove = new ArrayList<>();
-        for (MatOfPoint contour : contours) {
-            if (Imgproc.contourArea(contour) < contourSize) {
-                contoursToRemove.add(contour);
-            }
-        }
-        contours.removeAll(contoursToRemove);
+        contours = contours.stream().filter(contour -> Imgproc.contourArea(contour) < contourSize)
+                .collect(Collectors.toList());
 
-        List<MatOfPoint2f> contours2f = new ArrayList<>();
-        for (MatOfPoint contour : contours) {
+        contours.forEach(contour -> {
             MatOfPoint2f contour2f = new MatOfPoint2f();
             contour.convertTo(contour2f, CvType.CV_32FC2);
             Imgproc.approxPolyDP(contour2f, contour2f, 0.05 * Imgproc.arcLength(contour2f, true), true);
-            contours2f.add(contour2f);
-        }
-        contours.clear();
-        for (MatOfPoint2f contour2f : contours2f) {
-            MatOfPoint contour = new MatOfPoint();
             contour2f.convertTo(contour, CvType.CV_32SC2);
-            contours.add(contour);
-        }
+        });
 
         if (!contours.isEmpty()) {
             contours = auxMergeContours(contours, contours.size() - 1, xDist, yDist);

@@ -34,7 +34,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import model.CVProcessor;
+import model.CvProcessor;
 import model.Utils;
 import model.Vehicle;
 import model.Writer;
@@ -122,13 +122,13 @@ public class Controller {
     private ObjectProperty<String> messageCounter;
     private ObjectProperty<String> messageSpeed;
     private ObjectProperty<String> messageValues;
-    private CVProcessor cv;
+    private CvProcessor cv;
     private VideoCapture capture;
     private ScheduledExecutorService timer;
     private boolean stopped;
 
     public Controller() {
-        cv = new CVProcessor();
+        cv = new CvProcessor();
         capture = new VideoCapture();
         stopped = true;
         sliders = new ArrayList<>();
@@ -162,17 +162,11 @@ public class Controller {
             capture.open(deviceNum);
             if (capture.isOpened()) {
                 stopped = false;
-                Runnable thread = new Runnable() {
-                    @Override
-                    public void run() {
-                        onCVThread();
-                    }
-                };
                 timer = Executors.newSingleThreadScheduledExecutor();
-                timer.scheduleAtFixedRate(thread, 0, 33, TimeUnit.MILLISECONDS);
+                timer.scheduleAtFixedRate(() -> onCvThread(), 0, 33, TimeUnit.MILLISECONDS);
                 cameraButton.setText("Stop camera");
             } else {
-                Utils.onFXThread(messageCounter, "Failed to connect the camera...");
+                Utils.onFxThread(messageCounter, "Failed to connect the camera...");
             }
         } else {
             stopped = true;
@@ -181,7 +175,7 @@ public class Controller {
         }
     }
 
-    private void onCVThread() {
+    private void onCvThread() {
         Mat frame = new Mat();
         if (capture.isOpened()) {
             try {
@@ -209,12 +203,12 @@ public class Controller {
                     }
                     updateText();
                     draw(frame, contours, currentCentroids);
-                    Utils.onFXThread(differenceImage.imageProperty(), Utils.mat2Image(differenceFrame));
-                    Utils.onFXThread(processedImage.imageProperty(), Utils.mat2Image(thresholdFrame));
-                    Utils.onFXThread(originalImage.imageProperty(), Utils.mat2Image(frame));
+                    Utils.onFxThread(differenceImage.imageProperty(), Utils.mat2Image(differenceFrame));
+                    Utils.onFxThread(processedImage.imageProperty(), Utils.mat2Image(thresholdFrame));
+                    Utils.onFxThread(originalImage.imageProperty(), Utils.mat2Image(frame));
                 }
             } catch (Exception e) {
-                Utils.onFXThread(messageCounter, "Failed to process image... ");
+                Utils.onFxThread(messageCounter, "Failed to process image... ");
             }
         }
     }
@@ -228,7 +222,7 @@ public class Controller {
         }
         String count = "Vehicles counted: " + cv.getVehicleCounter() + "\t\tVehicles currently tracked: "
                 + currentVehicles;
-        Utils.onFXThread(this.messageCounter, count);
+        Utils.onFxThread(this.messageCounter, count);
         String currentValues = "";
         for (Slider slider : sliders) {
             if (!slider.getId().equals("centerX") && !slider.getId().equals("rightBarrier")
@@ -249,9 +243,9 @@ public class Controller {
             if (currentSpeed != 0.0) {
                 speed = speed + String.format("%.2f", currentSpeed) + " km/h   ";
             }
-            Utils.onFXThread(this.messageSpeed, speed);
+            Utils.onFxThread(this.messageSpeed, speed);
         }
-        Utils.onFXThread(messageValues, currentValues);
+        Utils.onFxThread(messageValues, currentValues);
     }
 
     private void draw(Mat frame, List<MatOfPoint> contours, List<Point> centroids) {
@@ -360,7 +354,7 @@ public class Controller {
                 timer.shutdown();
                 timer.awaitTermination(33, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                Utils.onFXThread(messageCounter, "Failed to stop frame processing. Releasing camera now...");
+                Utils.onFxThread(messageCounter, "Failed to stop frame processing. Releasing camera now...");
             }
         }
         if (capture.isOpened()) {
